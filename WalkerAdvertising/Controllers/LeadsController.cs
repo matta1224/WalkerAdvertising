@@ -31,39 +31,46 @@ namespace WalkerAdvertising.Controllers
             _logger.LogTrace(Newtonsoft.Json.JsonConvert.SerializeObject(lead));
 
             var success = false;
-            var rsponsStatus = System.Net.HttpStatusCode.OK;
-            if(string.IsNullOrWhiteSpace(lead.Name) ||
-                string.IsNullOrWhiteSpace(lead.PhoneNumber) ||
-                string.IsNullOrWhiteSpace(lead.ProviderId) ||
-                string.IsNullOrWhiteSpace(lead.ZipCode) 
-            )
+            var responsStatus = System.Net.HttpStatusCode.OK;
+            try
             {
-                rsponsStatus = System.Net.HttpStatusCode.BadRequest;
+                if (string.IsNullOrWhiteSpace(lead.Name) ||
+                    string.IsNullOrWhiteSpace(lead.PhoneNumber) ||
+                    string.IsNullOrWhiteSpace(lead.ProviderId) ||
+                    string.IsNullOrWhiteSpace(lead.ZipCode)
+                )
+                {
+                    responsStatus = System.Net.HttpStatusCode.BadRequest;
+                }
+                else
+                {
+                    // TODO: Save lead into db
+
+                    if (lead.AllowCommunicateEmail)
+                    {
+                        //TODO: send email
+                    }
+                    if (lead.AllowCommunicateText)
+                    {
+                        //TODO: send text
+                    }
+                    success = true;
+                }
+
+                _logger.LogTrace(success.ToString());
+
+                return new ApiResultModel<bool>
+                {
+                    Result = success,
+                    HttpStatusCode = responsStatus,
+                    Message = ""
+                };
             }
-            else
+            catch (Exception)
             {
-                // TODO: Save lead into db
 
-                if (lead.AllowCommunicateEmail)
-                {
-                    //TODO: send email
-                }
-                if (lead.AllowCommunicateText)
-                {
-                    //TODO: send text
-                }
-                success = true;
+                throw;
             }
-
-            _logger.LogTrace(success.ToString());
-
-            return new ApiResultModel<bool> {
-                Result = success,
-                HttpStatusCode = rsponsStatus,
-                Message = ""     
-            };
-
-
         }
     }
 }
